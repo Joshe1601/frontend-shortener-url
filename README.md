@@ -1,36 +1,249 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# URL Shortener - Frontend
 
-## Getting Started
+## Descripción
 
-First, run the development server:
+Este es el frontend del acortador de URLs, desarrollado con Next.js, React y TypeScript. Proporciona una interfaz moderna y responsive para acortar URLs y visualizar un historial temporal (no persistente) de enlaces generados.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Tecnologías Utilizadas
+
+### Next.js 14+ (App Router)
+**¿Por qué Next.js?**
+- **SEO optimizado**: Renderizado del lado del servidor (SSR) y generación estática (SSG) mejoran el posicionamiento en buscadores
+- **App Router**: Sistema de enrutamiento moderno basado en carpetas, más intuitivo y potente
+- **Developer Experience**: Hot reload, TypeScript integrado, y excelente documentación
+- **Despliegue versátil**: Compatible con múltiples plataformas (Firebase, Vercel, AWS, etc.)
+
+### TypeScript
+**¿Por qué TypeScript?**
+- **Type Safety**: Prevención de errores en tiempo de desarrollo gracias a los tipos
+- **Refactoring seguro**: Cambios de código más confiables
+- **Escalabilidad**: Facilita el mantenimiento en proyectos grandes
+- **Documentación implícita**: Los tipos sirven como documentación del código
+
+### Tailwind CSS
+- Framework de utilidades CSS para diseño rápido y consistente
+- Sin dependencias de componentes externos
+- Diseño totalmente personalizable
+
+## Estructura del Proyecto
+
+```
+frontend/
+├── app/
+│   ├── page.tsx                    # Página principal
+│   ├── [shortCode]/
+│   │   └── page.tsx                # Ruta dinámica para redirección
+│   ├── layout.tsx                  # Layout raíz de la aplicación
+│   └── globals.css                 # Estilos globales
+├── public/                         # Archivos estáticos
+├── .env.local                      # Variables de entorno (desarrollo)
+├── .env.production                 # Variables de entorno (producción)
+├── next.config.js                  # Configuración de Next.js
+├── tailwind.config.js              # Configuración de Tailwind
+├── tsconfig.json                   # Configuración de TypeScript
+├── firebase.json                   # Configuración de Firebase
+├── .firebaserc                     # Proyecto de Firebase
+└── package.json                    # Dependencias del proyecto
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Configuración de Variables de Entorno
 
-## Learn More
+Para una mejor organización, es recomendable utilizar diferentes archivos de entorno para desarrollo y producción.
 
-To learn more about Next.js, take a look at the following resources:
+### Desarrollo Local
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Crea un archivo `.env.local` en la raíz del proyecto (/) para la configuración local:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```env
+NEXT_PUBLIC_API_URL=https://tu-api-gateway.execute-api.region.amazonaws.com/prod/create
+NEXT_PUBLIC_REDIRECT_API_URL=https://tu-api-gateway.execute-api.region.amazonaws.com/prod/redirect
+```
 
-## Deploy on Vercel
+### Producción (Firebase)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Crea un archivo `.env.production` en la raíz del proyecto (/) para la configuración de producción:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```env
+NEXT_PUBLIC_API_URL=https://tu-api-gateway.execute-api.region.amazonaws.com/prod/create
+NEXT_PUBLIC_REDIRECT_API_URL=https://tu-api-gateway.execute-api.region.amazonaws.com/prod/redirect
+```
+
+
+## Instalación y Desarrollo
+
+### Prerequisitos
+- Node.js 18+
+- npm o yarn
+- Cuenta de Firebase
+
+### Instalación
+
+```bash
+# Clona el repositorio
+git clone https://github.com/Joshe1601/frontend-shortener-url.git
+cd frontend-shortener-url
+
+# Instala dependencias
+npm install
+
+# Configura tus variables de entorno
+cp .env.example .env.local
+# Edita el .env.local con tus URLs
+```
+
+### Desarrollo Local
+
+```bash
+# Inicia servidor de desarrollo
+npm run dev
+
+# La aplicación estará disponible en http://localhost:3000
+```
+
+### Build de Producción
+
+```bash
+# Generar build optimizado
+npm run build
+
+# Probar build localmente
+npm start
+```
+
+## Despliegue en Firebase Hosting
+
+### 1. Instalar Firebase CLI
+
+```bash
+npm install -g firebase-tools
+```
+
+### 2. Iniciar sesión en Firebase
+
+```bash
+firebase login
+```
+
+Esto abrirá tu navegador para autenticarte con tu cuenta de Google.
+
+### 3. Inicializar Firebase en el proyecto
+
+```bash
+firebase init
+```
+
+Selecciona las siguientes opciones:
+- **Hosting**: Configure files for Firebase Hosting
+- **Proyecto**: Selecciona tu proyecto existente o crea uno nuevo
+- **Do you want to use a web framework**: `n` (Porque está en etapa experimental)
+- **Public directory**: Escribe `out` (Next.js exportará aquí)
+- **Single-page app**: `Yes`
+- **GitHub deployment**: Opcional (recomendado para CI/CD)
+
+### 4. Configurar Next.js para exportación estática
+
+Edita `next.config.js`:
+
+```javascript
+/** @type {import('next').NextConfig} */
+const nextConfig: NextConfig = {
+           output: 'export',
+           images: {
+              unoptimized: true,
+           },
+        };
+
+export default nextConfig;
+```
+
+### 5. Revisar Firebase Hosting
+
+Verifica que el archivo `firebase.json` se vea así:
+
+```json
+{
+  "hosting": {
+    "public": "out",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+```
+
+### 6. Build y Deploy
+
+```bash
+# Generar build de producción
+npm run build
+
+# Desplegar a Firebase
+firebase deploy
+```
+
+### 7. Ver tu aplicación
+
+Firebase te mostrará la URL de tu aplicación:
+```
+✔  Deploy complete!
+
+Project Console: https://console.firebase.google.com/project/tu-proyecto
+Hosting URL: https://tu-proyecto.web.app
+```
+
+## Funcionalidades
+
+### Componente Principal (`app/page.tsx`)
+- Formulario para acortar URLs
+- Campo opcional para código personalizado
+- Validación de URLs
+- Historial temporal de URLs acortadas (no persistente)
+- Botón de copiar al portapapeles
+- Diseño responsive y moderno
+
+### Ruta Dinámica (`app/[shortCode]/page.tsx`)
+- Captura cualquier código corto de la URL
+- Consulta el API Gateway para obtener la URL original
+- Redirección automática
+- Pantalla de carga mientras procesa
+- Página de error amigable si la URL no existe
+
+
+## Scripts Disponibles
+
+```bash
+npm run dev          # Servidor de desarrollo
+npm run build        # Build de producción
+npm start            # Servidor de producción local
+npm run lint         # Linter de código
+```
+
+## Recursos Adicionales
+
+- [Documentación de Next.js](https://nextjs.org/docs)
+- [Documentación de Firebase Hosting](https://firebase.google.com/docs/hosting)
+- [Guía de TypeScript](https://www.typescriptlang.org/docs/)
+- [Tailwind CSS](https://tailwindcss.com/docs)
+
+## Contribución
+
+Si deseas contribuir al proyecto, por favor:
+1. Haz fork del repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
+3. Commit tus cambios (`git commit -m 'Añade nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
+5. Abre un Pull Request
+
+---
+
+Desarrollado por Jose Morillos usando Next.js y TypeScript
