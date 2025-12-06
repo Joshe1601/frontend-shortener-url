@@ -144,7 +144,7 @@ Selecciona las siguientes opciones:
 
 Edita `next.config.js`:
 
-```javascript
+```typescript
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {

@@ -176,7 +176,7 @@ export default function UrlShortener() {
                     id="customCode"
                     value={customCode}
                     onChange={(e) => setCustomCode(e.target.value)}
-                    placeholder="mi-codigo"
+                    placeholder="mi-codigo-personalizado"
                     className="w-full px-4 py-3 bg-slate-900/50 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
                 />
               </div>
