@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import {useEffect, useState} from 'react';
 
 interface ShortenedUrl {
   shortCode: string;
@@ -13,8 +13,51 @@ export default function UrlShortener() {
   const [url, setUrl] = useState('');
   const [customCode, setCustomCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [error, setError] = useState('');
   const [history, setHistory] = useState<ShortenedUrl[]>([]);
+
+  // Se agregó este useEffect para detectar el path y redirigir
+  useEffect(() => {
+    const detectAndRedirect = async () => {
+      const path = window.location.pathname.slice(1);
+      console.log("Path detectado:", path);
+
+      // Si hay un path y no es vacío, intentar redirigir
+      if (path && path !== '') {
+        setRedirecting(true);
+        await redirectToUrl(path);
+      }
+    };
+
+    detectAndRedirect();
+  }, []);
+
+  const redirectToUrl = async (shortCode: string) => {
+    try {
+      const API_URL = process.env.NEXT_PUBLIC_REDIRECT_API_URL || '';
+
+      const response = await fetch(`${API_URL}/${shortCode}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'URL no encontrada');
+      }
+
+      // Redirigir a la URL original
+      window.location.href = data.originalUrl;
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al redirigir');
+      setRedirecting(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +65,6 @@ export default function UrlShortener() {
     setLoading(true);
 
     try {
-      // TODO: Reemplazar con tu URL de API Gateway
       const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
       const response = await fetch(API_URL, {
@@ -69,6 +111,34 @@ export default function UrlShortener() {
       console.error('Error al copiar:', err);
     }
   };
+
+  if (redirecting) {
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+            <p className="text-slate-300 text-lg">Redirigiendo...</p>
+            {error && (
+                <div className="mt-6 max-w-md mx-auto">
+                  <div className="bg-red-500/10 border border-red-500/50 rounded-lg p-4">
+                    <p className="text-red-400 text-sm mb-3">{error}</p>
+                    <button
+                        onClick={() => {
+                          setRedirecting(false);
+                          setError('');
+                          window.history.pushState({}, '', '/');
+                        }}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+                    >
+                      Volver al inicio
+                    </button>
+                  </div>
+                </div>
+            )}
+          </div>
+        </div>
+    );
+  }
 
   return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
