@@ -44,7 +44,8 @@ frontend/
 └── package.json                    # Dependencias del proyecto
 ```
 
-
+## Arquitectura utilizada
+![ShorterURL.drawio.png](ShorterURL.drawio.png)
 
 ## Configuración de Variables de Entorno
 
