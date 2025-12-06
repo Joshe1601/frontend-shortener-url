@@ -30,9 +30,7 @@ Este es el frontend del acortador de URLs, desarrollado con Next.js, React y Typ
 ```
 frontend/
 ├── app/
-│   ├── page.tsx                    # Página principal
-│   ├── [shortCode]/
-│   │   └── page.tsx                # Ruta dinámica para redirección
+│   ├── page.tsx                    # Página principal con el formulario de acortador
 │   ├── layout.tsx                  # Layout raíz de la aplicación
 │   └── globals.css                 # Estilos globales
 ├── public/                         # Archivos estáticos
@@ -147,15 +145,25 @@ Selecciona las siguientes opciones:
 Edita `next.config.js`:
 
 ```javascript
-/** @type {import('next').NextConfig} */
-const nextConfig: NextConfig = {
-           output: 'export',
-           images: {
-              unoptimized: true,
-           },
-        };
+import type { NextConfig } from "next";
 
-export default nextConfig;
+const nextConfig: NextConfig = {
+    output: 'export',
+    images: {
+        unoptimized: true,
+    },
+    trailingSlash: false,
+    async rewrites() {
+        return [
+            {
+                source: '/:shortCode',
+                destination: '/',
+            },
+        ]
+    },
+};
+
+module.exports = nextConfig;
 ```
 
 ### 5. Revisar Firebase Hosting

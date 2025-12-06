@@ -21,7 +21,6 @@ export default function UrlShortener() {
   useEffect(() => {
     const detectAndRedirect = async () => {
       const path = window.location.pathname.slice(1);
-      console.log("Path detectado:", path);
 
       // Si hay un path y no es vacío, intentar redirigir
       if (path && path !== '') {
@@ -79,7 +78,6 @@ export default function UrlShortener() {
       });
 
       const body = await response.json();
-      console.log("Respuesta cruda:", body);
 
       let data;
       if (typeof body.data === 'string') {
